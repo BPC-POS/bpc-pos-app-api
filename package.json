@@ -15,6 +15,7 @@
     "watch:bun": "bun run --watch ./src/main.ts",
     "build:bun": "bun build --external=class-validator --external=@nestjs/sequelize --external=@mikro-orm/core --external=@nestjs/mongoose --external=mock-aws-s3 --external=hbs --external=aws-sdk --external=nock --external=@nestjs/websockets/socket-module --external=class-transformer --external=@nestjs/microservices --define process.env.NODE_ENV:\"'production'\" --target=bun --minify ./dist/main.js --outdir=dist --format esm ./src/main.ts",
     "typeorm": "typeorm-ts-node-esm",
+    "migration:run": "yarn run typeorm migration:run -d ormconfig.ts",
     "migration:generate": "yarn run typeorm migration:generate -d ormconfig.ts src/database/migrations/",
     "migration:create": "yarn run typeorm migration:create -d ormconfig.ts src/database/migrations/",
     "new": "hygen new",
