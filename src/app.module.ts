@@ -21,6 +21,36 @@ import { addTransactionalDataSource } from 'typeorm-transactional';
 import { HealthCheckerModule } from './modules/health-checker/health-checker.module.ts';
 import { ApiConfigService } from './shared/services/api-config.service.ts';
 import { SharedModule } from './shared/shared.module.ts';
+import { CouponsModule } from './modules/coupons/coupons.module';
+import { DiscountsModule } from './modules/discounts/discounts.module';
+import { EmployeesModule } from './modules/employees/employees.module';
+import { InventoryModule } from './modules/inventory/inventory.module';
+import { LoyaltyPointsModule } from './modules/loyalty-points/loyalty-points.module';
+import { LoyaltyTransactionsModule } from './modules/loyalty-transactions/loyalty-transactions.module';
+import { MembersModule } from './modules/members/members.module';
+import { OrdersModule } from './modules/orders/orders.module';
+import { OrderItemsModule } from './modules/order-items/order-items.module';
+import { OtpsModule } from './modules/otps/otps.module';
+import { PaymentsModule } from './modules/payments/payments.module';
+import { ProductAttributesModule } from './modules/product-attributes/product-attributes.module';
+import { ProductAttributeValuesModule } from './modules/product-attribute-values/product-attribute-values.module';
+import { ProductCategoriesModule } from './modules/product-categories/product-categories.module';
+import { ProductCategoryMappingsModule } from './modules/product-category-mappings/product-category-mappings.module';
+import { ProductTagsModule } from './modules/product-tags/product-tags.module';
+import { ProductTaxesModule } from './modules/product-taxes/product-taxes.module';
+import { ProductVariantsModule } from './modules/product-variants/product-variants.module';
+import { PurchaseOrdersModule } from './modules/purchase-orders/purchase-orders.module';
+import { PurchaseOrderItemsModule } from './modules/purchase-order-items/purchase-order-items.module';
+import { RbacActionsModule } from './modules/rbac-actions/rbac-actions.module';
+import { RbacModulesModule } from './modules/rbac-modules/rbac-modules.module';
+import { ReturnsModule } from './modules/returns/returns.module';
+import { ReturnItemsModule } from './modules/return-items/return-items.module';
+import { RolesModule } from './modules/roles/roles.module';
+import { RoleActionsModule } from './modules/role-actions/role-actions.module';
+import { ShiftsModule } from './modules/shifts/shifts.module';
+import { SuppliersModule } from './modules/suppliers/suppliers.module';
+import { ProductsModule } from './modules/products/products.module';
+import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [
@@ -73,6 +103,36 @@ import { SharedModule } from './shared/shared.module.ts';
       inject: [ApiConfigService],
     }),
     HealthCheckerModule,
+    CouponsModule,
+    DiscountsModule,
+    EmployeesModule,
+    InventoryModule,
+    LoyaltyPointsModule,
+    LoyaltyTransactionsModule,
+    MembersModule,
+    OrdersModule,
+    OrderItemsModule,
+    OtpsModule,
+    PaymentsModule,
+    ProductAttributesModule,
+    ProductAttributeValuesModule,
+    ProductCategoriesModule,
+    ProductCategoryMappingsModule,
+    ProductTagsModule,
+    ProductTaxesModule,
+    ProductVariantsModule,
+    PurchaseOrdersModule,
+    PurchaseOrderItemsModule,
+    RbacActionsModule,
+    RbacModulesModule,
+    ReturnsModule,
+    ReturnItemsModule,
+    RolesModule,
+    RoleActionsModule,
+    ShiftsModule,
+    SuppliersModule,
+    ProductsModule,
+    UsersModule,
   ],
   providers: [],
 })

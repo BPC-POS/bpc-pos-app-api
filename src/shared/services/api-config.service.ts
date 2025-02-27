@@ -83,8 +83,7 @@ export class ApiConfigService {
 
   get postgresConfig(): TypeOrmModuleOptions {
     const entities = [
-      join(new URL('../../database/entity/**/*.entity{.ts,.js}', import.meta.url).pathname),
-      join(new URL('../../database/entity/**/*.view-entity{.ts,.js}', import.meta.url).pathname),
+      join(new URL('../../database/entity/*.entity{.ts,.js}', import.meta.url).pathname),
     ];
     const migrations = [
       join(new URL('../../database/migrations/*{.ts,.js}', import.meta.url).pathname),
