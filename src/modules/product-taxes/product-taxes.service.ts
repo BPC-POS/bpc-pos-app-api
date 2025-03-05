@@ -5,7 +5,7 @@ import { UpdateProductTaxDto } from './dto/update-product-tax.dto';
 @Injectable()
 export class ProductTaxesService {
   create(createProductTaxDto: CreateProductTaxDto) {
-    return 'This action adds a new productTax';
+    return 'This action adds a new productTax'+createProductTaxDto;
   }
 
   findAll() {
@@ -17,7 +17,7 @@ export class ProductTaxesService {
   }
 
   update(id: number, updateProductTaxDto: UpdateProductTaxDto) {
-    return `This action updates a #${id} productTax`;
+    return `This action updates a #${id} productTax`+ updateProductTaxDto;
   }
 
   remove(id: number) {

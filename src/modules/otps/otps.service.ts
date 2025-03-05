@@ -5,7 +5,7 @@ import { UpdateOtpDto } from './dto/update-otp.dto';
 @Injectable()
 export class OtpsService {
   create(createOtpDto: CreateOtpDto) {
-    return 'This action adds a new otp';
+    return 'This action adds a new otp'+    createOtpDto;
   }
 
   findAll() {
@@ -17,7 +17,7 @@ export class OtpsService {
   }
 
   update(id: number, updateOtpDto: UpdateOtpDto) {
-    return `This action updates a #${id} otp`;
+    return `This action updates a #${id} otp`+updateOtpDto;
   }
 
   remove(id: number) {

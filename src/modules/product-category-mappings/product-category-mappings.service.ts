@@ -5,7 +5,7 @@ import { UpdateProductCategoryMappingDto } from './dto/update-product-category-m
 @Injectable()
 export class ProductCategoryMappingsService {
   create(createProductCategoryMappingDto: CreateProductCategoryMappingDto) {
-    return 'This action adds a new productCategoryMapping';
+    return 'This action adds a new productCategoryMapping'+ createProductCategoryMappingDto;
   }
 
   findAll() {
@@ -17,7 +17,7 @@ export class ProductCategoryMappingsService {
   }
 
   update(id: number, updateProductCategoryMappingDto: UpdateProductCategoryMappingDto) {
-    return `This action updates a #${id} productCategoryMapping`;
+    return `This action updates a #${id} productCategoryMapping`+ updateProductCategoryMappingDto;
   }
 
   remove(id: number) {

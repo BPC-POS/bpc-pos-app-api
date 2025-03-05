@@ -1,4 +1,4 @@
-import { Entity, Column, OneToMany } from 'typeorm';
+import { Entity, Column, OneToMany, BeforeInsert, BeforeUpdate } from 'typeorm';
 import type { Relation } from 'typeorm';
 import { CustomBaseEntity } from '../../common/abstract.entity';
 import {
@@ -9,6 +9,7 @@ import {
   ThirdPartyLog,
   Return,
 } from './index';
+import * as bcrypt from 'bcrypt';
 
 @Entity({ name: 'members' })
 export class Member extends CustomBaseEntity {
@@ -33,7 +34,7 @@ export class Member extends CustomBaseEntity {
   @Column()
   name!: string;
 
-  @Column()
+  @Column({ select: false })
   password!: string;
 
   @Column({ default: 1 })
@@ -65,4 +66,12 @@ export class Member extends CustomBaseEntity {
 
   @OneToMany(() => Return, (returnEntity) => returnEntity.member)
   returns!: Relation<Return>[];
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  async hashPassword(): Promise<void> {
+    if (this.password) {
+      this.password = await bcrypt.hash(this.password, 10);
+    }
+  }
 }

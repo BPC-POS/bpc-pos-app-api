@@ -1,8 +1,10 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { DiscountsService } from './discounts.service';
-import { CreateDiscountDto } from './dto/create-discount.dto';
-import { UpdateDiscountDto } from './dto/update-discount.dto';
+import { CreateDiscountDto, UpdateDiscountDto } from './dto/index.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Discounts')
+@ApiBearerAuth()
 @Controller('discounts')
 export class DiscountsController {
   constructor(private readonly discountsService: DiscountsService) {}

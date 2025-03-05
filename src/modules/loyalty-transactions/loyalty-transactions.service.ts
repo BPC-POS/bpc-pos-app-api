@@ -5,7 +5,7 @@ import { UpdateLoyaltyTransactionDto } from './dto/update-loyalty-transaction.dt
 @Injectable()
 export class LoyaltyTransactionsService {
   create(createLoyaltyTransactionDto: CreateLoyaltyTransactionDto) {
-    return 'This action adds a new loyaltyTransaction';
+    return 'This action adds a new loyaltyTransaction'+ createLoyaltyTransactionDto;
   }
 
   findAll() {
@@ -17,7 +17,7 @@ export class LoyaltyTransactionsService {
   }
 
   update(id: number, updateLoyaltyTransactionDto: UpdateLoyaltyTransactionDto) {
-    return `This action updates a #${id} loyaltyTransaction`;
+    return `This action updates a #${id} loyaltyTransaction`+ updateLoyaltyTransactionDto;
   }
 
   remove(id: number) {

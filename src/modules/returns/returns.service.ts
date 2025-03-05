@@ -5,7 +5,7 @@ import { UpdateReturnDto } from './dto/update-return.dto';
 @Injectable()
 export class ReturnsService {
   create(createReturnDto: CreateReturnDto) {
-    return 'This action adds a new return';
+    return 'This action adds a new return'+createReturnDto;
   }
 
   findAll() {
@@ -17,7 +17,7 @@ export class ReturnsService {
   }
 
   update(id: number, updateReturnDto: UpdateReturnDto) {
-    return `This action updates a #${id} return`;
+    return `This action updates a #${id} ${updateReturnDto}return`;
   }
 
   remove(id: number) {

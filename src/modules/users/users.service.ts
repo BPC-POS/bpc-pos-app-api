@@ -60,6 +60,20 @@ export class UsersService {
       throw new BadRequestException('An unknown error occurred');
     }
   }
+  async findByEmail(email: string) {
+    try {
+      const user = await this.userRepository.findOne({ where: { email } });
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      return user;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new BadRequestException(error.message);
+      }
+      throw new BadRequestException('An unknown error occurred');
+    }
+  }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
     try {

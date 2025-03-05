@@ -1,26 +1,77 @@
-import { Injectable } from '@nestjs/common';
-import { CreateCouponDto } from './dto/create-coupon.dto';
-import { UpdateCouponDto } from './dto/update-coupon.dto';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CreateCouponDto, UpdateCouponDto } from './dto/index.dto';
+import { Coupon } from '../../database/entities';
 
 @Injectable()
 export class CouponsService {
-  create(createCouponDto: CreateCouponDto) {
-    return 'This action adds a new coupon';
+  constructor(
+    @InjectRepository(Coupon)
+    private couponsRepository: Repository<Coupon>,
+  ) {}
+
+  async create(createCouponDto: CreateCouponDto): Promise<Coupon> {
+    try {
+      const coupon = this.couponsRepository.create(createCouponDto);
+      return await this.couponsRepository.save(coupon);
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new BadRequestException(error.message);
+      }
+      throw new BadRequestException('An unknown error occurred');
+    }
   }
 
-  findAll() {
-    return `This action returns all coupons`;
+  async findAll(): Promise<Coupon[]> {
+    try {
+      return await this.couponsRepository.find();
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new BadRequestException(error.message);
+      }
+      throw new BadRequestException('An unknown error occurred');
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} coupon`;
+  async findOne(id: number): Promise<Coupon> {
+    try {
+      const coupon = await this.couponsRepository.findOneBy({ id });
+      if (!coupon) {
+        throw new NotFoundException('Coupon not found');
+      }
+      return coupon;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new BadRequestException(error.message);
+      }
+      throw new BadRequestException('An unknown error occurred');
+    }
   }
 
-  update(id: number, updateCouponDto: UpdateCouponDto) {
-    return `This action updates a #${id} coupon`;
+  async update(id: number, updateCouponDto: UpdateCouponDto): Promise<Coupon> {
+    try {
+      await this.couponsRepository.update(id, updateCouponDto);
+      return await this.findOne(id);
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new BadRequestException(error.message);
+      }
+      throw new BadRequestException('An unknown error occurred');
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} coupon`;
+  async remove(id: number): Promise<void> {
+    try {
+      const result = await this.couponsRepository.delete(id);
+      if (result.affected === 0) {
+        throw new NotFoundException('Coupon not found');
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new BadRequestException(error.message);
+      }
+      throw new BadRequestException('An unknown error occurred');
+    }
   }
 }

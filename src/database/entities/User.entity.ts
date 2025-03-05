@@ -25,7 +25,7 @@ export class User extends CustomBaseEntity {
     @Column()
     name!: string;
 
-    @Column()
+    @Column({ select: false })
     password!: string;
 
     @Column({ default: 1 })

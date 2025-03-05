@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { CreateReturnItemDto } from './dto/create-return-item.dto';
 import { UpdateReturnItemDto } from './dto/update-return-item.dto';
+import { CreateReturnItemDto } from './dto/create-return-item.dto';
 
 @Injectable()
 export class ReturnItemsService {
   create(createReturnItemDto: CreateReturnItemDto) {
-    return 'This action adds a new returnItem';
+    return 'This action adds a new returnItem'+createReturnItemDto;
   }
 
   findAll() {
@@ -17,7 +17,7 @@ export class ReturnItemsService {
   }
 
   update(id: number, updateReturnItemDto: UpdateReturnItemDto) {
-    return `This action updates a #${id} returnItem`;
+    return `This action updates a #${id} ${updateReturnItemDto}returnItem`;
   }
 
   remove(id: number) {

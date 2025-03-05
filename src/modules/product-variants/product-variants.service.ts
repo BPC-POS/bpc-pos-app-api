@@ -5,7 +5,7 @@ import { UpdateProductVariantDto } from './dto/update-product-variant.dto';
 @Injectable()
 export class ProductVariantsService {
   create(createProductVariantDto: CreateProductVariantDto) {
-    return 'This action adds a new productVariant';
+    return 'This action adds a new productVariant'+ createProductVariantDto;
   }
 
   findAll() {
@@ -17,7 +17,7 @@ export class ProductVariantsService {
   }
 
   update(id: number, updateProductVariantDto: UpdateProductVariantDto) {
-    return `This action updates a #${id} productVariant`;
+    return `This action updates a #${id} productVariant`+ updateProductVariantDto;
   }
 
   remove(id: number) {

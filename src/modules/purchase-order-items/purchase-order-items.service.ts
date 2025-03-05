@@ -5,7 +5,7 @@ import { UpdatePurchaseOrderItemDto } from './dto/update-purchase-order-item.dto
 @Injectable()
 export class PurchaseOrderItemsService {
   create(createPurchaseOrderItemDto: CreatePurchaseOrderItemDto) {
-    return 'This action adds a new purchaseOrderItem';
+    return 'This action adds a new purchaseOrderItem'+ createPurchaseOrderItemDto;
   }
 
   findAll() {
@@ -17,7 +17,7 @@ export class PurchaseOrderItemsService {
   }
 
   update(id: number, updatePurchaseOrderItemDto: UpdatePurchaseOrderItemDto) {
-    return `This action updates a #${id} purchaseOrderItem`;
+    return `This action updates a #${id} ${updatePurchaseOrderItemDto}purchaseOrderItem`;
   }
 
   remove(id: number) {

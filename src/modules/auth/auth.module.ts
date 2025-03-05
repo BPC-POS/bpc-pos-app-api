@@ -1,39 +1,25 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
-import { PassportModule } from '@nestjs/passport';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from '../../database/entities';
+import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from '../../guards/auth.guard';
+import { UsersModule } from '../users/users.module';
 
-import { ApiConfigService } from '../../shared/services/api-config.service.ts';
-import { AuthController } from './auth.controller.ts';
-import { AuthService } from './auth.service.ts';
-import { JwtStrategy } from './jwt.strategy.ts';
-import { PublicStrategy } from './public.strategy.ts';
-import { UsersModule } from 'modules/users/users.module.ts';
-
+@Global()
 @Module({
-  imports: [
-    forwardRef(() => UsersModule),
-    PassportModule.register({ defaultStrategy: 'jwt' }),
-    JwtModule.registerAsync({
-      useFactory: (configService: ApiConfigService) => ({
-        privateKey: configService.authConfig.privateKey,
-        publicKey: configService.authConfig.publicKey,
-        signOptions: {
-          algorithm: 'RS256',
-          //     expiresIn: configService.getNumber('JWT_EXPIRATION_TIME'),
-        },
-        verifyOptions: {
-          algorithms: ['RS256'],
-        },
-        // if you want to use token with expiration date
-        // signOptions: {
-        //     expiresIn: configService.getNumber('JWT_EXPIRATION_TIME'),
-        // },
-      }),
-      inject: [ApiConfigService],
-    }),
-  ],
+  imports: [JwtModule, UsersModule, TypeOrmModule.forFeature([User])],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, PublicStrategy],
-  exports: [JwtModule, AuthService],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+    AuthService,
+    AuthGuard,
+  ],
+  exports: [AuthGuard, AuthService],
 })
 export class AuthModule {}

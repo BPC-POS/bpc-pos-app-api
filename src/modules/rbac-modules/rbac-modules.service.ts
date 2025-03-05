@@ -5,7 +5,7 @@ import { UpdateRbacModuleDto } from './dto/update-rbac-module.dto';
 @Injectable()
 export class RbacModulesService {
   create(createRbacModuleDto: CreateRbacModuleDto) {
-    return 'This action adds a new rbacModule';
+    return 'This action adds a new rbacModule'+createRbacModuleDto;
   }
 
   findAll() {
@@ -17,7 +17,7 @@ export class RbacModulesService {
   }
 
   update(id: number, updateRbacModuleDto: UpdateRbacModuleDto) {
-    return `This action updates a #${id} rbacModule`;
+    return `This action updates a #${id} ${updateRbacModuleDto}rbacModule`;
   }
 
   remove(id: number) {

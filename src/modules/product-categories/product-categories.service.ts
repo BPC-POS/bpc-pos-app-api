@@ -1,26 +1,77 @@
-import { Injectable } from '@nestjs/common';
-import { CreateProductCategoryDto } from './dto/create-product-category.dto';
-import { UpdateProductCategoryDto } from './dto/update-product-category.dto';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CreateProductCategoryDto, UpdateProductCategoryDto } from './dto/index.dto';
+import { ProductCategory } from '../../database/entities';
 
 @Injectable()
 export class ProductCategoriesService {
-  create(createProductCategoryDto: CreateProductCategoryDto) {
-    return 'This action adds a new productCategory';
+  constructor(
+    @InjectRepository(ProductCategory)
+    private productCategoriesRepository: Repository<ProductCategory>,
+  ) {}
+
+  async create(createProductCategoryDto: CreateProductCategoryDto): Promise<ProductCategory> {
+    try {
+      const productCategory = this.productCategoriesRepository.create(createProductCategoryDto);
+      return await this.productCategoriesRepository.save(productCategory);
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new BadRequestException(error.message);
+      }
+      throw new BadRequestException('An unknown error occurred');
+    }
   }
 
-  findAll() {
-    return `This action returns all productCategories`;
+  async findAll(): Promise<ProductCategory[]> {
+    try {
+      return await this.productCategoriesRepository.find();
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new BadRequestException(error.message);
+      }
+      throw new BadRequestException('An unknown error occurred');
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} productCategory`;
+  async findOne(id: number): Promise<ProductCategory> {
+    try {
+      const productCategory = await this.productCategoriesRepository.findOneBy({ id });
+      if (!productCategory) {
+        throw new NotFoundException('ProductCategory not found');
+      }
+      return productCategory;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new BadRequestException(error.message);
+      }
+      throw new BadRequestException('An unknown error occurred');
+    }
   }
 
-  update(id: number, updateProductCategoryDto: UpdateProductCategoryDto) {
-    return `This action updates a #${id} productCategory`;
+  async update(id: number, updateProductCategoryDto: UpdateProductCategoryDto): Promise<ProductCategory> {
+    try {
+      await this.productCategoriesRepository.update(id, updateProductCategoryDto);
+      return await this.findOne(id);
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new BadRequestException(error.message);
+      }
+      throw new BadRequestException('An unknown error occurred');
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} productCategory`;
+  async remove(id: number): Promise<void> {
+    try {
+      const result = await this.productCategoriesRepository.delete(id);
+      if (result.affected === 0) {
+        throw new NotFoundException('ProductCategory not found');
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new BadRequestException(error.message);
+      }
+      throw new BadRequestException('An unknown error occurred');
+    }
   }
 }

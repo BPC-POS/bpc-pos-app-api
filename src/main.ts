@@ -9,7 +9,7 @@ import { Transport } from '@nestjs/microservices';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import compression from 'compression';
-import helmet from 'helmet';
+// import helmet from 'helmet';
 import morgan from 'morgan';
 import { initializeTransactionalContext } from 'typeorm-transactional';
 

@@ -3,14 +3,14 @@ import {
   applyDecorators,
   Param,
   ParseUUIDPipe,
-  UseGuards,
+  // UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import type { Type } from '@nestjs/common/interfaces';
 import { ApiBearerAuth, ApiUnauthorizedResponse } from '@nestjs/swagger';
 
-import { AuthGuard } from '../guards/auth.guard.ts';
-import { RolesGuard } from '../guards/roles.guard.ts';
+// import { AuthGuard } from '../guards/auth.guard.ts';
+// import { RolesGuard } from '../guards/roles.guard.ts';
 import { AuthUserInterceptor } from '../interceptors/auth-user-interceptor.service.ts';
 import { PublicRoute } from './public-route.decorator.ts';
 import { Roles } from './roles.decorator.ts';
@@ -24,7 +24,7 @@ export function Auth(
 
   return applyDecorators(
     Roles(roles),
-    UseGuards(AuthGuard({ public: isPublicRoute }), RolesGuard),
+    // UseGuards(AuthGuard({ public: isPublicRoute }), RolesGuard),
     ApiBearerAuth(),
     UseInterceptors(AuthUserInterceptor),
     ApiUnauthorizedResponse({ description: 'Unauthorized' }),

@@ -17,7 +17,6 @@ import {
 } from 'nestjs-i18n';
 import { DataSource } from 'typeorm';
 import { addTransactionalDataSource } from 'typeorm-transactional';
-
 import { HealthCheckerModule } from './modules/health-checker/health-checker.module.ts';
 import { ApiConfigService } from './shared/services/api-config.service.ts';
 import { SharedModule } from './shared/shared.module.ts';
@@ -51,6 +50,7 @@ import { ShiftsModule } from './modules/shifts/shifts.module';
 import { SuppliersModule } from './modules/suppliers/suppliers.module';
 import { ProductsModule } from './modules/products/products.module';
 import { UsersModule } from './modules/users/users.module';
+import { AuthModule } from './modules/auth/auth.module.ts';
 
 @Module({
   imports: [
@@ -133,6 +133,7 @@ import { UsersModule } from './modules/users/users.module';
     SuppliersModule,
     ProductsModule,
     UsersModule,
+    AuthModule,
   ],
   providers: [],
 })

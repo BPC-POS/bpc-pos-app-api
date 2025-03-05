@@ -2,28 +2,25 @@ import { CanActivate, ExecutionContext, HttpStatus, Injectable } from '@nestjs/c
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
+import { User } from '../database/entities';
+import { PUBLIC_ROUTE_KEY } from '../decorators/public-route.decorator';
+import { ErrorException } from '../exceptions/error.exception';
 import { Request } from 'express';
 import * as fs from 'fs';
 import { Repository } from 'typeorm';
-import { cfg } from '../../config/env.config';
-import { User } from '../../database/entities';
-import { Logger } from '../../logger/logger.service';
-import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
-import { ErrorException } from '../exceptions/error.exception';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
     constructor(
         private jwtService: JwtService,
         private reflector: Reflector,
-        private readonly logger: Logger,
 
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
     ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
-        const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+        const isPublic = this.reflector.getAllAndOverride<boolean>(PUBLIC_ROUTE_KEY, [
             context.getHandler(),
             context.getClass(),
         ]);
@@ -36,7 +33,6 @@ export class AuthGuard implements CanActivate {
         const token = this.extractTokenFromHeader(request);
 
         if (!token) {
-            this.logger.error(`[authentication] - Not found token`);
             throw new ErrorException(
                 HttpStatus.UNAUTHORIZED,
                 'AuthGuard',
@@ -44,17 +40,23 @@ export class AuthGuard implements CanActivate {
             );
         }
         try {
-            const pubCert = fs.readFileSync(cfg('JWT_PUBLIC_KEY'));
+            const publicKeyPath = process.env.JWT_PUBLIC_KEY;
+            if (!publicKeyPath) {
+                throw new ErrorException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    'AuthGuard',
+                    'JWT public key path is not defined',
+                );
+            }
+            const pubCert = fs.readFileSync(publicKeyPath);
 
             const payload = await this.jwtService.verifyAsync(token, {
                 publicKey: pubCert,
             });
 
-            const user = await this.userRepository
-                .createQueryBuilder('user')
-                .addSelect(['user.password', 'user.tokenInfo'])
-                .where('user.id = :id', { id: payload.id })
-                .getOne();
+            const user = await this.userRepository.findOne({
+              where: { id: payload.id },
+            });
 
             if (!user) {
                 throw new ErrorException(
@@ -63,26 +65,9 @@ export class AuthGuard implements CanActivate {
                     'payload ',
                 );
             }
-            if (user.tokenInfo?.crm !== token) {
-                throw new ErrorException(
-                    HttpStatus.UNAUTHORIZED,
-                    'Authentication Error',
-                    'token',
-                );
-            }
-            delete user.tokenInfo;
-            delete user.images;
-            delete user.creatorInfo;
-            delete user.loginInfo;
-            delete user.password;
 
             request['state'] = { user: user };
         } catch (error) {
-            this.logger.error(
-                `[authentication] # Authentication Error # ${
-                    error.response?.details || error.message
-                }`,
-            );
             throw new ErrorException(
                 HttpStatus.UNAUTHORIZED,
                 'Authentication Error',

@@ -1,26 +1,77 @@
-import { Injectable } from '@nestjs/common';
-import { CreateDiscountDto } from './dto/create-discount.dto';
-import { UpdateDiscountDto } from './dto/update-discount.dto';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CreateDiscountDto, UpdateDiscountDto } from './dto/index.dto';
+import { Discount } from '../../database/entities';
 
 @Injectable()
 export class DiscountsService {
-  create(createDiscountDto: CreateDiscountDto) {
-    return 'This action adds a new discount';
+  constructor(
+    @InjectRepository(Discount)
+    private discountsRepository: Repository<Discount>,
+  ) {}
+
+  async create(createDiscountDto: CreateDiscountDto): Promise<Discount> {
+    try {
+      const discount = this.discountsRepository.create(createDiscountDto);
+      return await this.discountsRepository.save(discount);
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new BadRequestException(error.message);
+      }
+      throw new BadRequestException('An unknown error occurred');
+    }
   }
 
-  findAll() {
-    return `This action returns all discounts`;
+  async findAll(): Promise<Discount[]> {
+    try {
+      return await this.discountsRepository.find();
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new BadRequestException(error.message);
+      }
+      throw new BadRequestException('An unknown error occurred');
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} discount`;
+  async findOne(id: number): Promise<Discount> {
+    try {
+      const discount = await this.discountsRepository.findOneBy({ id });
+      if (!discount) {
+        throw new NotFoundException('Discount not found');
+      }
+      return discount;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new BadRequestException(error.message);
+      }
+      throw new BadRequestException('An unknown error occurred');
+    }
   }
 
-  update(id: number, updateDiscountDto: UpdateDiscountDto) {
-    return `This action updates a #${id} discount`;
+  async update(id: number, updateDiscountDto: UpdateDiscountDto): Promise<Discount> {
+    try {
+      await this.discountsRepository.update(id, updateDiscountDto);
+      return await this.findOne(id);
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new BadRequestException(error.message);
+      }
+      throw new BadRequestException('An unknown error occurred');
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} discount`;
+  async remove(id: number): Promise<void> {
+    try {
+      const result = await this.discountsRepository.delete(id);
+      if (result.affected === 0) {
+        throw new NotFoundException('Discount not found');
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new BadRequestException(error.message);
+      }
+      throw new BadRequestException('An unknown error occurred');
+    }
   }
 }
