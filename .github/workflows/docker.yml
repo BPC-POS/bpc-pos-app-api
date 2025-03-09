@@ -55,6 +55,11 @@ jobs:
             ProxyCommand cloudflared access ssh --hostname ${{ secrets.VPS_IP }}
           EOL
 
+      - name: Install cloudflared
+        run: |
+          ssh -t vps << 'EOF'
+          sudo apt-get install -y cloudflared
+
       - name: SSH into VPS and Deploy
         run: |
           ssh vps << 'EOF'
