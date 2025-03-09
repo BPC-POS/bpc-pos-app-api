@@ -42,14 +42,22 @@ jobs:
         run: |
           docker push ${{ env.DOCKER_IMAGE }}
 
-      - name: Install sshpass
-        run: sudo apt-get install -y sshpass
+      - name: Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          cat >> ~/.ssh/config <<EOL
+          Host vps
+            HostName ${{ secrets.VPS_IP }}
+            User ${{ secrets.VPS_USERNAME }}
+            IdentityFile ~/.ssh/id_rsa
+            ProxyCommand cloudflared access ssh --hostname ${{ secrets.VPS_IP }}
+          EOL
 
       - name: SSH into VPS and Deploy
-        env:
-          VPS_PASSWORD: ${{ secrets.VPS_PASSWORD }}
         run: |
-          ssh -o ProxyCommand="cloudflared access ssh --hostname ${{ secrets.SERVER_HOST }}" ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} '
+          ssh vps << 'EOF'
             mkdir -p "${{ env.ENV_DIR }}"
             cd "${{ env.ENV_DIR }}"
 
@@ -62,4 +70,4 @@ jobs:
             docker rmi ${{ env.DOCKER_IMAGE }} || true
             docker pull ${{ env.DOCKER_IMAGE }}
             docker run -it --rm --name ${{ env.APP_NAME }} --env-file .env -p 3300:3000 -d ${{ env.DOCKER_IMAGE }}
-          '
+          EOF
