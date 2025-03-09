@@ -49,7 +49,7 @@ jobs:
         env:
           VPS_PASSWORD: ${{ secrets.VPS_PASSWORD }}
         run: |
-          sshpass -p "$VPS_PASSWORD" ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_IP }} '
+          sshpass -p "$VPS_PASSWORD" ssh -o ProxyCommand="cloudflared access ssh --hostname ${{ secrets.SERVER_HOST }}" ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} '
             mkdir -p "${{ env.ENV_DIR }}"
             cd "${{ env.ENV_DIR }}"
 
