@@ -33,3 +33,5 @@ export * from './Tax.entity';
 export * from './ThirdPartyLog.entity';
 export * from './User.entity';
 export * from './VariantAttribute.entity';
+export * from './TableArea.entity';
+export * from './Table.entity';

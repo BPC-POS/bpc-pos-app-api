@@ -19,7 +19,7 @@
     "migration:generate": "yarn run typeorm migration:generate -d ormconfig.ts src/database/migrations/",
     "migration:create": "yarn run typeorm migration:create -d ormconfig.ts src/database/migrations/",
     "new": "hygen new",
-    "migration:revert": "yarn run typeorm migration:revert",
+    "migration:revert": "yarn run typeorm migration:revert -d ormconfig.ts",
     "schema:drop": "yarn run typeorm schema:drop",
     "watch:dev": "nest start --watch ./src/main.ts",
     "lint": "eslint .",
