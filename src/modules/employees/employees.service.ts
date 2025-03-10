@@ -21,10 +21,10 @@ export class EmployeesService {
     try {
       const { role_id, shifts, member_id, ...employeeData } = createEmployeeDto;
 
-      const role = await this.rolesRepository.findOneBy({ id: role_id });
-      if (!role) {
-        throw new NotFoundException('Role not found');
-      }
+      // const role = await this.rolesRepository.findOneBy({ id: role_id });
+      // if (!role) {
+      //   throw new NotFoundException('Role not found');
+      // }
 
       const member = await this.membersRepository.findOneBy({ id: member_id });
       if (!member) {
@@ -33,7 +33,7 @@ export class EmployeesService {
 
       const employee = this.employeesRepository.create({
         ...employeeData,
-        role,
+        // role,
         member,
       });
 
@@ -99,7 +99,7 @@ export class EmployeesService {
       }
 
       if (shifts && shifts.length > 0) {
-        employee.shifts = await this.shiftsRepository.findByIds(shifts);
+        employee.shifts = await this.shiftsRepository.findBy({ id: In(shifts) });
       }
 
       Object.assign(employee, employeeData);

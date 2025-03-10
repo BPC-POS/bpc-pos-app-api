@@ -1,4 +1,4 @@
-import { IsString, IsEmail, IsNumber } from 'class-validator';
+import { IsString, IsEmail, IsNumber, IsOptional } from 'class-validator';
 import { PartialType, ApiProperty } from '@nestjs/swagger';
 
 export class CreateEmployeeDto {
@@ -14,16 +14,17 @@ export class CreateEmployeeDto {
   @ApiProperty({ example: '123-456-7890', description: 'Phone number of the employee' })
   phone_number!: string;
 
+  @IsOptional()
   @IsNumber()
   @ApiProperty({ example: 1, description: 'Role ID of the employee' })
-  role_id!: number;
+  role_id?: number;
 
   @IsNumber()
   @ApiProperty({ example: 1, description: 'Status of the employee' })
   status!: number;
 
   @IsNumber()
-  @ApiProperty({ example: 123, description: 'Member ID of the employee' })
+  @ApiProperty({ example: 1, description: 'Member ID of the employee' })
   member_id!: number;
 
   @ApiProperty({ example: [1, 2], description: 'Shifts of the employee' })

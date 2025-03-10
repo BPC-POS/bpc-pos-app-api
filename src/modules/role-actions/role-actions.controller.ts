@@ -2,7 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { RoleActionsService } from './role-actions.service';
 import { CreateRoleActionDto } from './dto/create-role-action.dto';
 import { UpdateRoleActionDto } from './dto/update-role-action.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Role Actions')
+@ApiBearerAuth()
 @Controller('role-actions')
 export class RoleActionsController {
   constructor(private readonly roleActionsService: RoleActionsService) {}

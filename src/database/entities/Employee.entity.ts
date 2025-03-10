@@ -14,14 +14,17 @@ export class Employee extends CustomBaseEntity {
   @Column()
   phone_number!: string;
 
-  @Column()
-  role_id!: number;
+  @Column({ nullable: true })
+  role_id?: number;
 
   @Column()
   status!: number;
 
   @Column('jsonb', { nullable: true })
   meta!: any;
+
+  @Column()
+  member_id?: number;
 
   @ManyToOne(() => Role, (role) => role.employees)
   role!: Relation<Role>;

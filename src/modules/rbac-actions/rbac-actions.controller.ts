@@ -2,7 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { RbacActionsService } from './rbac-actions.service';
 import { CreateRbacActionDto } from './dto/create-rbac-action.dto';
 import { UpdateRbacActionDto } from './dto/update-rbac-action.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('RBAC Actions')
+@ApiBearerAuth()
 @Controller('rbac-actions')
 export class RbacActionsController {
   constructor(private readonly rbacActionsService: RbacActionsService) {}
