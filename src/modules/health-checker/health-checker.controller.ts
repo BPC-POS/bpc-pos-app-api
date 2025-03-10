@@ -7,6 +7,7 @@ import {
 } from '@nestjs/terminus';
 
 import { ServiceHealthIndicator } from './health-indicators/service.indicator.ts';
+import { PublicRoute } from '../../decorators/public-route.decorator.ts';
 
 @Controller('health')
 export class HealthCheckerController {
@@ -16,6 +17,7 @@ export class HealthCheckerController {
     private serviceIndicator: ServiceHealthIndicator,
   ) {}
 
+  @PublicRoute()
   @Get()
   @HealthCheck()
   async check(): Promise<HealthCheckResult> {
