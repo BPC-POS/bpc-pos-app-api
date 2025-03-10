@@ -29,7 +29,6 @@ export class ProductsService {
       const product = this.productsRepository.create(productData);
       const savedProduct = await this.productsRepository.save(product);
 
-      // Save product categories
       if (categories && categories.length > 0) {
         const existingCategories = await this.productCategoryRepository.findByIds(categories);
         if (existingCategories.length !== categories.length) {
@@ -43,29 +42,23 @@ export class ProductsService {
         await this.productCategoryMappingRepository.save(categoryMappings);
       }
 
-      // Save product attributes
       if (attributes && attributes.length > 0) {
         const attributeValues = [];
         
-        // For each attribute, ensure it exists in the database
         for (const attr of attributes) {
-          // Check if attribute exists
           let existingAttribute = await this.productAttributeRepository.findOne({
             where: { id: attr.attribute_id }
           });
           
-          // If it doesn't exist, create it
           if (!existingAttribute) {
             const newAttribute = this.productAttributeRepository.create({
               name: attr.value || `Attribute ${attr.attribute_id}`,
               status: 1
             });
             existingAttribute = await this.productAttributeRepository.save(newAttribute);
-            // Update the attribute_id to use the newly created attribute's ID
             attr.attribute_id = existingAttribute.id;
           }
           
-          // Add to attribute values array with guaranteed valid attribute_id
           attributeValues.push({
             product_id: savedProduct.id,
             attribute_id: attr.attribute_id,
@@ -73,7 +66,6 @@ export class ProductsService {
           });
         }
 
-        // Save all attribute values with verified attribute IDs
         if (attributeValues.length > 0) {
           await this.productAttributeValueRepository.save(attributeValues);
         }
@@ -135,14 +127,27 @@ export class ProductsService {
     }
   }
 
-  async findOne(id: number): Promise<Product> {
+  async findOne(id: number): Promise<any> {
     try {
       const product = await this.productsRepository.findOneBy({ id });
       if (!product) {
         throw new NotFoundException('Product not found');
       }
-      return product;
+
+      const categories = await this.getProductCategories(id);
+      const attributes = await this.getProductAttributes(id);
+      const variants = await this.getProductVariants(id);
+
+      return {
+        ...product,
+        categories,
+        attributes,
+        variants,
+      };
     } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
       }
@@ -150,11 +155,184 @@ export class ProductsService {
     }
   }
 
-  async update(id: number, updateProductDto: UpdateProductDto): Promise<Product> {
+  private async getProductCategories(productId: number): Promise<ProductCategory[]> {
+    const categoryMappings = await this.productCategoryMappingRepository.find({
+      where: { product_id: productId },
+      relations: ['category'],
+    });
+    
+    return categoryMappings.map(mapping => mapping.category)
+      .filter(category => category !== null);
+  }
+
+  private async getProductAttributes(productId: number): Promise<any[]> {
+    const attributeValues = await this.productAttributeValueRepository.find({
+      where: { product_id: productId },
+      relations: ['attribute'],
+    });
+    
+    return attributeValues.map(av => ({
+      id: av.attribute?.id,
+      name: av.attribute?.name,
+      value: av.value,
+    }));
+  }
+
+  private async getProductVariants(productId: number): Promise<any[]> {
+    const variants = await this.productVariantRepository.find({
+      where: { product_id: productId },
+    });
+    
+    const variantsWithAttributes = await Promise.all(variants.map(async variant => {
+      const variantAttributes = await this.variantAttributeRepository.find({
+        where: { variant_id: variant.id },
+        relations: ['attribute'],
+      });
+      
+      const attributes = variantAttributes.map(va => ({
+        id: va.attribute?.id,
+        name: va.attribute?.name,
+        value: va.value,
+      }));
+      
+      return {
+        ...variant,
+        attributes,
+      };
+    }));
+    
+    return variantsWithAttributes;
+  }
+
+  async update(id: number, updateProductDto: UpdateProductDto): Promise<any> {
+    const { categories, attributes, variants, ...productData } = updateProductDto;
     try {
-      await this.productsRepository.update(id, updateProductDto);
+      const existingProduct = await this.productsRepository.findOneBy({ id });
+      if (!existingProduct) {
+        throw new NotFoundException('Product not found');
+      }
+
+      await this.productsRepository.update(id, productData);
+
+      if (categories) {
+        await this.productCategoryMappingRepository.delete({ product_id: id });
+        
+        if (categories.length > 0) {
+          const existingCategories = await this.productCategoryRepository.findByIds(categories);
+          if (existingCategories.length !== categories.length) {
+            throw new BadRequestException('One or more categories do not exist');
+          }
+
+          const categoryMappings = categories.map(categoryId => ({
+            product_id: id,
+            category_id: categoryId,
+          }));
+          await this.productCategoryMappingRepository.save(categoryMappings);
+        }
+      }
+
+      if (attributes) {
+        await this.productAttributeValueRepository.delete({ product_id: id });
+        
+        if (attributes.length > 0) {
+          const attributeValues = [];
+          
+          for (const attr of attributes) {
+            let existingAttribute = await this.productAttributeRepository.findOne({
+              where: { id: attr.attribute_id }
+            });
+            
+            if (!existingAttribute) {
+              const newAttribute = this.productAttributeRepository.create({
+                name: attr.value || `Attribute ${attr.attribute_id}`,
+                status: 1
+              });
+              existingAttribute = await this.productAttributeRepository.save(newAttribute);
+              attr.attribute_id = existingAttribute.id;
+            }
+            
+            attributeValues.push({
+              product_id: id,
+              attribute_id: attr.attribute_id,
+              value: attr.value,
+            });
+          }
+
+          if (attributeValues.length > 0) {
+            await this.productAttributeValueRepository.save(attributeValues);
+          }
+        }
+      }
+
+      if (variants) {
+        const existingVariants = await this.productVariantRepository.find({
+          where: { product_id: id }
+        });
+        
+        const existingVariantIds = existingVariants.map(v => v.id);
+        const updatedVariantIds = variants
+          .filter(v => v.id !== undefined)
+          .map(v => v.id);
+        
+        const variantsToRemove = existingVariantIds.filter(
+          id => !updatedVariantIds.includes(id)
+        );
+        
+        if (variantsToRemove.length > 0) {
+          await this.productVariantRepository.delete(variantsToRemove);
+        }
+        
+        if (variants.length > 0) {
+          for (const variant of variants) {
+            const variantData = {
+              ...variant,
+              product_id: id,
+            };
+            
+            let savedVariant;
+            if (variant.id) {
+              await this.productVariantRepository.update(variant.id, variantData);
+              savedVariant = await this.productVariantRepository.findOneBy({ id: variant.id });
+            } else {
+              savedVariant = await this.productVariantRepository.save(variantData);
+            }
+            
+            if (variant.attributes && variant.attributes.length > 0) {
+              if (variant.id) {
+                await this.variantAttributeRepository.delete({ variant_id: variant.id });
+              }
+              
+              for (const attr of variant.attributes) {
+                const existingAttribute = await this.productAttributeRepository.findOne({
+                  where: [{ id: attr.attribute_id }]
+                });
+                
+                if (!existingAttribute) {
+                  const newAttribute = this.productAttributeRepository.create({
+                    name: attr.value || `Attribute ${attr.attribute_id}`,
+                    status: 1
+                  });
+                  const savedAttribute = await this.productAttributeRepository.save(newAttribute);
+                  attr.attribute_id = savedAttribute.id;
+                }
+              }
+              
+              const variantAttributes = variant.attributes.map(attr => ({
+                variant_id: savedVariant.id,
+                attribute_id: attr.attribute_id,
+                value: attr.value,
+              }));
+              await this.variantAttributeRepository.save(variantAttributes);
+            }
+          }
+        }
+      }
+
       return await this.findOne(id);
     } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
       }
