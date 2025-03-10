@@ -1,7 +1,7 @@
 import { Entity, Column, ManyToOne, OneToMany } from 'typeorm';
 import type { Relation } from 'typeorm';
 import { CustomBaseEntity } from '../../common/abstract.entity';
-import { Role, Shift } from './index';
+import { Role, Shift, Member } from './index';
 
 @Entity({ name: 'employees' })
 export class Employee extends CustomBaseEntity {
@@ -28,4 +28,7 @@ export class Employee extends CustomBaseEntity {
 
   @OneToMany(() => Shift, (shift) => shift.employee)
   shifts!: Relation<Shift>[];
+
+  @ManyToOne(() => Member, (member) => member.employees)
+  member!: Relation<Member>;
 }

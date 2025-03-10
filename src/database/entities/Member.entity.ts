@@ -8,6 +8,7 @@ import {
   MediaFile,
   ThirdPartyLog,
   Return,
+  Employee,
 } from './index';
 import * as bcrypt from 'bcrypt';
 
@@ -66,6 +67,9 @@ export class Member extends CustomBaseEntity {
 
   @OneToMany(() => Return, (returnEntity) => returnEntity.member)
   returns!: Relation<Return>[];
+
+  @OneToMany(() => Employee, (employee) => employee.member)
+  employees!: Relation<Employee>[];
 
   @BeforeInsert()
   @BeforeUpdate()
