@@ -67,6 +67,10 @@ export class CreateProductDto {
 
   @IsOptional()
   @ApiProperty({ example: {} })
+  avatar?: any;
+
+  @IsOptional()
+  @ApiProperty({ example: {} })
   meta?: any;
 
   @IsOptional()
