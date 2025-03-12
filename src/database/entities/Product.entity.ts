@@ -33,6 +33,9 @@ export class Product extends CustomBaseEntity {
   status!: number;
 
   @Column('jsonb', { nullable: true })
+  avatar!: Record<string, any>;
+
+  @Column('jsonb', { nullable: true })
   meta!: any;
 
   @OneToMany(() => ProductTax, (productTax) => productTax.product)
