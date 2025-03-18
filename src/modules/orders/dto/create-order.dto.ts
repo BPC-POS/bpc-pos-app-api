@@ -34,11 +34,11 @@ export class CreateOrderDto {
   @IsNumber()
   @IsOptional()
   // @ApiProperty({ example: 1, description: 'Customer ID' })
-  customer_id?: number;
+  member_id?: number;
 
   @IsOptional()
   @IsNumber()
-  @ApiProperty({ example: 1, description: 'User ID who created the order', required: false })
+  // @ApiProperty({ example: 1, description: 'User ID who created the order', required: false })
   user_id?: number;
 
   @IsOptional()

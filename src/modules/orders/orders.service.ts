@@ -68,8 +68,8 @@ export class OrdersService {
       }
 
       const order = queryRunner.manager.create(Order, {
-        customer_id: createOrderDto.customer_id,
-        user_id: createOrderDto.user_id,
+        member_id: createOrderDto.member_id || null,
+        user_id: createOrderDto.user_id || null,
         order_date: createOrderDto.order_date || new Date(),
         total_amount: createOrderDto.total_amount,
         discount: createOrderDto.discount || 0,
@@ -81,13 +81,14 @@ export class OrdersService {
       });
 
       const savedOrder = await queryRunner.manager.save(order);
-
+      console.log(createOrderDto.items)
       const orderItems = createOrderDto.items.map(item => ({
         order_id: savedOrder.id,
         product_id: item.product_id,
         variant_id: item.variant_id,
         quantity: item.quantity,
         unit_price: item.unit_price,
+        price: item.unit_price,
         discount: item.discount || 0,
         meta: item.meta,
       }));
@@ -111,7 +112,7 @@ export class OrdersService {
   async findAll(): Promise<Order[]> {
     try {
       return await this.orderRepository.find({
-        relations: ['items', 'items.product'],
+        relations: ['orderItems', 'orderItems.product'],
         order: { createdAt: 'DESC' }
       });
     } catch (error) {
@@ -126,7 +127,7 @@ export class OrdersService {
     try {
       const order = await this.orderRepository.findOne({
         where: { id },
-        relations: ['items', 'items.product', 'items.variant'],
+        relations: ['orderItems', 'orderItems.product', 'orderItems.variant'],
       });
 
       if (!order) {

@@ -7,12 +7,16 @@ import {
   Payment,
   LoyaltyTransaction,
   Return,
+  User,
 } from './index';
 
 @Entity({ name: 'orders' })
 export class Order extends CustomBaseEntity {
-  @Column()
-  member_id!: number;
+  @Column({ nullable: true })
+  member_id!: number | null;
+
+  @Column({ nullable: true })
+  user_id!: number | null;
 
   @Column('decimal')
   total_amount!: number;
@@ -25,6 +29,9 @@ export class Order extends CustomBaseEntity {
 
   @ManyToOne(() => Member, (member) => member.orders)
   member!: Relation<Member>;
+
+  @ManyToOne(() => User, (User) => User.orders)
+  user!: Relation<User>;
 
   @OneToMany(() => OrderItem, (orderItem) => orderItem.order)
   orderItems!: Relation<OrderItem>[];
