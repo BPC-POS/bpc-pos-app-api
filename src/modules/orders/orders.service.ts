@@ -14,6 +14,7 @@ import {
   ProductVariant,
 } from '../../database/entities';
 import PDFDocument from 'pdfkit';
+import axios from 'axios';
 
 @Injectable()
 export class OrdersService {
@@ -385,7 +386,7 @@ export class OrdersService {
       'Variant',
       'Qty',
       'Unit Price',
-      'Discount',
+      // 'Discount',
       'Total',
     ];
     const tableColumnWidths = [35, 160, 90, 40, 70, 60, 70];
@@ -494,17 +495,55 @@ export class OrdersService {
     doc.text(`Total Amount:`, 380, tableRowPosition);
     doc.text(`$${order.total_amount}`, 480, tableRowPosition);
 
-    // Footer
-    doc.fontSize(10).font('Helvetica');
-    doc.text('Thank you!', 50, 700, { align: 'center' });
+    // Add QR Code for payment
+    if (order.total_amount > 0) {
+      doc.moveDown(2);
+      // Generate VietQR code
+      // You might want to replace these parameters with your actual bank details
+      const bankId = 'vietinbank'; // Example bank ID
+      const accountNo = '101877496008'; // Your account number
+      const template = 'compact2';
+      const accountName = 'BPC%20POS%20SYSTEM';
+      const description = `Payment%20for%20order%20${order.id}`;
 
-    doc.text(
-      `Generated on ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`,
-      50,
-      715,
-      { align: 'center' },
-    );
+      const qrCodeUrl = `https://img.vietqr.io/image/${bankId}-${accountNo}-${template}.png?amount=${order.total_amount}&addInfo=${description}&accountName=${accountName}`;
 
-    doc.end();
+      // Add QR code image to the PDF
+      try {
+        const response = await axios.get(qrCodeUrl, {
+          responseType: 'arraybuffer',
+        });
+        const imageBuffer = Buffer.from(response.data, 'binary');
+        const pageWidth = doc.page.width;
+        const imageWidth = 200;
+        const x = (pageWidth - imageWidth) / 2;
+        
+        // Add QR code with some space above the footer
+        const footerPosition = 700;
+        const qrCodeHeight = 200;
+        const qrCodeY = footerPosition - qrCodeHeight - 20; // 20px space between QR code and footer
+        
+        doc.image(imageBuffer, x, qrCodeY, {
+          fit: [200, 200],
+          align: 'center',
+        });
+            } catch (error) {
+        console.error('Failed to add QR code to PDF:', error);
+        doc.text('QR Code not available', { align: 'center' });
+            }
+          }
+
+          // Footer
+          doc.fontSize(10).font('Helvetica');
+          doc.text('Thank you!', 50, 700, { align: 'center' });
+
+          doc.text(
+            `Generated on ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`,
+            50,
+            715,
+            { align: 'center' },
+          );
+
+          doc.end();
   }
 }
