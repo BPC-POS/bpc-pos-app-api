@@ -1,8 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Res } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+} from '@nestjs/swagger';
 
 @ApiTags('Orders')
 @ApiBearerAuth()
@@ -12,7 +17,10 @@ export class OrdersController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new order' })
-  @ApiResponse({ status: 201, description: 'The order has been successfully created.' })
+  @ApiResponse({
+    status: 201,
+    description: 'The order has been successfully created.',
+  })
   @ApiResponse({ status: 400, description: 'Bad request.' })
   create(@Body() createOrderDto: CreateOrderDto) {
     return this.ordersService.create(createOrderDto);
@@ -35,9 +43,17 @@ export class OrdersController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update an order' })
-  @ApiResponse({ status: 200, description: 'The order has been successfully updated.' })
+  @ApiResponse({
+    status: 200,
+    description: 'The order has been successfully updated.',
+  })
   @ApiResponse({ status: 404, description: 'Order not found.' })
   update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
     return this.ordersService.update(+id, updateOrderDto);
+  }
+
+  @Get(':id/invoice')
+  async getInvoice(@Param('id') id: string, @Res() res: any): Promise<void> {
+    await this.ordersService.generateInvoicePdfV2(+id, res);
   }
 }
