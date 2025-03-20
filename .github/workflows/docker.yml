@@ -10,9 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DOCKER_IMAGE: nguyenybin2015/bpc-pos-admin-panel-api:latest
-      APP_NAME: bpc-pos-admin-panel-api
-      ENV_DIR: /.env/bpc-pos-admin-panel-api
+      DOCKER_IMAGE: nguyenybin2015/bpc-pos-app-api:latest
+      APP_NAME: bpc-pos-app-api
+      ENV_DIR: /.env/bpc-pos-app-api
 
     steps:
       - name: Checkout code
