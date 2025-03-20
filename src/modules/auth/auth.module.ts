@@ -1,7 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from '../../database/entities';
+import { Member } from '../../database/entities';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { APP_GUARD } from '@nestjs/core';
@@ -10,7 +10,7 @@ import { UsersModule } from '../users/users.module';
 
 @Global()
 @Module({
-  imports: [JwtModule, UsersModule, TypeOrmModule.forFeature([User])],
+  imports: [JwtModule, UsersModule, TypeOrmModule.forFeature([Member])],
   controllers: [AuthController],
   providers: [
     {

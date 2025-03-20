@@ -1,7 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Body, Patch, Param, Delete } from '@nestjs/common';
 import { MembersService } from './members.service';
-import { CreateMemberDto, UpdateMemberDto } from './dto/index.dto';
+import { UpdateMemberDto } from './dto/index.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ReqUser } from '../../decorators/user.decorator';
+import { Member } from '../../database/entities';
 
 @ApiTags('Members')
 @ApiBearerAuth()
@@ -9,14 +11,19 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 export class MembersController {
   constructor(private readonly membersService: MembersService) {}
 
-  @Post()
-  create(@Body() createMemberDto: CreateMemberDto) {
-    return this.membersService.create(createMemberDto);
-  }
+  // @Post()
+  // create(@Body() createMemberDto: CreateMemberDto) {
+  //   return this.membersService.create(createMemberDto);
+  // }
 
-  @Get()
-  findAll() {
-    return this.membersService.findAll();
+  // @Get()
+  // findAll() {
+  //   return this.membersService.findAll();
+  // }
+
+  @Get('me')
+  findMe(@ReqUser() user: Member) {
+    return this.membersService.findOne(+user.id);
   }
 
   @Get(':id')

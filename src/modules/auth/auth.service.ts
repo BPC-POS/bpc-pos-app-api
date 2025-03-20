@@ -4,20 +4,20 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import * as fs from 'fs';
 import { Repository } from 'typeorm';
-import { User } from '../../database/entities';
+import { Member } from '../../database/entities';
 import { SignInDto } from './dto/auth.dto';
 import { ErrorException } from '../../exceptions/error.exception';
-import Enum from '../../constants/enum';
+// import Enum from '../../constants/enum';
 // import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class AuthService {
-	constructor(
-		private jwtService: JwtService,
+  constructor(
+    private jwtService: JwtService,
 
-		@InjectRepository(User)
-		private readonly userRepository: Repository<User>,
-	) {}
+    @InjectRepository(Member)
+    private readonly memberRepository: Repository<Member>,
+  ) {}
 
 	async signToken(data: object) {
 	if (!process.env.JWT_PRIVATE_KEY) {
@@ -43,7 +43,7 @@ export class AuthService {
 	}
 
 	async signIn({ email, password }: SignInDto) {
-		const user = await this.userRepository.findOne({
+		const user = await this.memberRepository.findOne({
       where: { email: email },
       select: ['id', 'password', 'status'],
     });
@@ -56,13 +56,6 @@ export class AuthService {
 			);
 		}
 
-		if (user.status !== Enum.User.STATUS.ACTIVE) {
-			throw new ErrorException(
-				HttpStatus.FORBIDDEN,
-				'signIn',
-				'User already NOT_ACTIVATED or PAUSED or LOCKED',
-			);
-		}
 		try {
 			const isAuth = this.comparePasswords(password, user.password);
 			if (!isAuth) {
@@ -74,6 +67,7 @@ export class AuthService {
 				);
 			}
 		} catch (error) {
+      console.log(error);
 			throw new ErrorException(HttpStatus.BAD_REQUEST, 'signIn', "Login failed");
 		}
 

@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, HttpStatus, Injectable } from '@nestjs/c
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../database/entities';
+import { Member } from '../database/entities';
 import { PUBLIC_ROUTE_KEY } from '../decorators/public-route.decorator';
 import { ErrorException } from '../exceptions/error.exception';
 import { Request } from 'express';
@@ -15,8 +15,8 @@ export class AuthGuard implements CanActivate {
         private jwtService: JwtService,
         private reflector: Reflector,
 
-        @InjectRepository(User)
-        private readonly userRepository: Repository<User>,
+        @InjectRepository(Member)
+        private readonly userRepository: Repository<Member>,
     ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
