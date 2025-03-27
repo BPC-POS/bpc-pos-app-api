@@ -1,5 +1,6 @@
 import type { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { apiReference } from '@scalar/nestjs-api-reference';
 
 export function setupSwagger(app: INestApplication): void {
   const documentBuilder = new DocumentBuilder()
@@ -61,7 +62,18 @@ Routes is following REST standard (Richardson level 3)
     },
   });
 
+  app.use(
+    '/documentation/new',
+    apiReference({
+      content: document,
+      theme: 'bluePlanet',
+    }),
+  );
+
   console.info(
     `Documentation: http://localhost:${process.env.PORT}/documentation`,
+  );
+  console.info(
+    `Documentation Scalar: http://localhost:${process.env.PORT}/documentation/new`,
   );
 }

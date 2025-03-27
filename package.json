@@ -49,6 +49,7 @@
     "@nestjs/terminus": "^10.2.3",
     "@nestjs/throttler": "^6.2.1",
     "@nestjs/typeorm": "^10.0.2",
+    "@scalar/nestjs-api-reference": "^0.4.3",
     "@types/pdfkit": "^0.13.9",
     "axios": "^1.8.3",
     "bcrypt": "^5.1.1",
