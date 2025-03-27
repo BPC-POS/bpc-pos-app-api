@@ -42,7 +42,7 @@ export class MembersService {
     try {
       const member = await this.membersRepository.findOne({
         where: { id },
-        relations: ['employee'],
+        relations: ['employees'],
       });
       if (!member) {
         throw new NotFoundException('Member not found');
