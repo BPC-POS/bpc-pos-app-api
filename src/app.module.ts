@@ -37,6 +37,7 @@ import { ProductsModule } from './modules/products/products.module';
 import { AuthModule } from './modules/auth/auth.module.ts';
 import { TablesModule } from './modules/tables/tables.module';
 import { TableAreaModule } from './modules/table-area/table-area.module';
+import { ShiftsModule } from './modules/shifts/shifts.module.ts';
 
 @Module({
   imports: [
@@ -115,7 +116,7 @@ import { TableAreaModule } from './modules/table-area/table-area.module';
     // ReturnItemsModule,
     RolesModule,
     RoleActionsModule,
-    // ShiftsModule,
+    ShiftsModule,
     // SuppliersModule,
     ProductsModule,
     // UsersModule,
